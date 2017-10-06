@@ -1,0 +1,5 @@
+- Allow easy key detection for rebinding
+- Hash list of all keys
+- Have input be based on player?
+- If single player allow keyboard and gamepad input?
+- Detect gamepads for player order
