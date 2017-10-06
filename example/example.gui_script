@@ -2,6 +2,12 @@ local dirtylarry = require("gooey.themes.dirtylarry.dirtylarry")
 
 function init(self)
 	dirtylarry.acquire_input()
+	
+	
+	self.axis_0 = 0
+	self.axis_1 = 0
+	self.axis_2 = 0
+	self.axis_3 = 0
 end
 
 function final(self)
@@ -19,11 +25,86 @@ function on_message(self, message_id, message, sender)
 	-- Remove this function if not needed
 end
 
+
+
+
 function on_input(self, action_id, action)
 	dirtylarry.button("btn_attack", action_id,action, function(button)
 		print("Attack Button Pressed")
 	end)
+	--if action_id ~= nil and action.released then print(action_id) end
+	if action_id == hash("text") then print(action.text) end
+	-- Note, to properly detect keys based on being held with shift you must do it with text
+	-- however this will not have the benefit of built in key states ...
+	-- so try to not require such keys except for some instant shortcuts
+	if action_id == hash("text") and action.text == "~" then
+		print(" shift + ` = ~")
+	end
+	--print(action.gamepad)
+	--pprint(action)
+	
+	-- key_lsuper etc are the windows key / command key on win/mac keyboards
+	
+	-- there is a blank.input_binding file with only key_p defined so you can check 
+	-- to make sure having extra keys detected is not slowing your game down (it shouldn't really)
+	-- be sure to test in release mode no debug mode
+	if action_id == hash("key_p") and action.released then
+		msg.post("@system:", "toggle_profile")
+	end
+	--pprint(action_id)
+	--pprint(action)
+	
+	
+	-- deadzone is the lower amount of axis movement you want to cut off due to bad axis info
+	-- gamepad models are different, some can be damaged, you'll want to allow users
+	-- to customize the deadzone values
+	-- gamepad axis 0 is gamepad_lstick_left and gamepad_lstick_right
+	-- gamepad axis 1 is gamepad_lstick_up and gamepad_lstick_down
+	-- gamepad axis 2 is gamepad_rstick_left and gamepad_rstick_right
+	-- gamepad axis 3 is gamepad_rstick_up and gamepad_rstick_down
+
+	if action_id == hash("gamepad_rstick_left") then
+		self.axis_2 = action.value * -1
+	end
+	if action_id == hash("gamepad_rstick_right") then
+		self.axis_2 = action.value
+	end	
+	
+	if action_id == hash("gamepad_rstick_up") then
+		self.axis_3 = action.value
+	end
+	if action_id == hash("gamepad_rstick_down") then
+		self.axis_3 = action.value * -1
+	end
+
+	if math.abs(self.axis_2) < 0.2 then self.axis_2 = 0 end
+	if math.abs(self.axis_3) < 0.2 then self.axis_3 = 0 end
+
+	
+	if self.axis_2 ~= 0 or self.axis_3 ~= 0 then print(self.axis_2, self.axis_3) end
 end
+
+
+--[[
+
+DEBUG:SCRIPT: 
+{
+  x = 522.5,
+  pressed = false,
+  y = 453.5,
+  gamepad = 0,
+  screen_dy = 0,
+  screen_dx = 0,
+  screen_y = 454,
+  screen_x = 522,
+  dx = 0,
+  value = 0.17280840873718,
+  repeated = false,
+  released = false,
+  dy = 0,
+}
+
+--]]
 
 function on_reload(self)
 	-- Add input-handling code here

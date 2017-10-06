@@ -7,6 +7,7 @@ include_dirs = definput
 
 [input]
 game_binding = /definput/all.input_bindingc
+gamepads = /definput/default.gamepadsc
 
 [bootstrap]
 main_collection = /example/main.collectionc
